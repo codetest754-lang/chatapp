@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chatapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: chat-service, namespace: chatapp }
+spec:
+  replicas: 10
+  selector: { matchLabels: { app: chat-service } }
+  template:
+    metadata: { labels: { app: chat-service } }
+    spec:
+      containers:
+        - name: chat-service
+          image: chatapp/chat-service:latest
+          ports: [{ containerPort: 8080 }]
+          env:
+            - { name: ConnectionStrings__Postgres, value: "Host=postgres;Port=5432;Database=chatapp;Username=postgres;Password=postgres" }
+            - { name: Redis__Connection, value: "redis:6379" }
+            - { name: Kafka__BootstrapServers, value: "kafka:9092" }
+---
+apiVersion: v1
+kind: Service
+metadata: { name: chat-service, namespace: chatapp }
+spec:
+  selector: { app: chat-service }
+  ports: [{ port: 80, targetPort: 8080 }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: gateway-api, namespace: chatapp }
+spec:
+  replicas: 6
+  selector: { matchLabels: { app: gateway-api } }
+  template:
+    metadata: { labels: { app: gateway-api } }
+    spec:
+      containers:
+        - name: gateway-api
+          image: chatapp/gateway-api:latest
+          ports: [{ containerPort: 8080 }]
+---
+apiVersion: v1
+kind: Service
+metadata: { name: gateway-api, namespace: chatapp }
+spec:
+  selector: { app: gateway-api }
+  ports: [{ port: 80, targetPort: 8080 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: { name: chatapp-ingress, namespace: chatapp }
+spec:
+  rules:
+    - host: api.chatapp.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: gateway-api, port: { number: 80 } }

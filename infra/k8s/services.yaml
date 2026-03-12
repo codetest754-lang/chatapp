@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chatapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: gateway-api, namespace: chatapp }
+spec: { replicas: 6, selector: { matchLabels: { app: gateway-api } }, template: { metadata: { labels: { app: gateway-api } }, spec: { containers: [{ name: gateway-api, image: chatapp/gateway-api:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: auth-service, namespace: chatapp }
+spec: { replicas: 4, selector: { matchLabels: { app: auth-service } }, template: { metadata: { labels: { app: auth-service } }, spec: { containers: [{ name: auth-service, image: chatapp/auth-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: user-service, namespace: chatapp }
+spec: { replicas: 4, selector: { matchLabels: { app: user-service } }, template: { metadata: { labels: { app: user-service } }, spec: { containers: [{ name: user-service, image: chatapp/user-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: chat-service, namespace: chatapp }
+spec: { replicas: 10, selector: { matchLabels: { app: chat-service } }, template: { metadata: { labels: { app: chat-service } }, spec: { containers: [{ name: chat-service, image: chatapp/chat-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: group-service, namespace: chatapp }
+spec: { replicas: 4, selector: { matchLabels: { app: group-service } }, template: { metadata: { labels: { app: group-service } }, spec: { containers: [{ name: group-service, image: chatapp/group-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: media-service, namespace: chatapp }
+spec: { replicas: 6, selector: { matchLabels: { app: media-service } }, template: { metadata: { labels: { app: media-service } }, spec: { containers: [{ name: media-service, image: chatapp/media-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: call-service, namespace: chatapp }
+spec: { replicas: 6, selector: { matchLabels: { app: call-service } }, template: { metadata: { labels: { app: call-service } }, spec: { containers: [{ name: call-service, image: chatapp/call-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: notification-service, namespace: chatapp }
+spec: { replicas: 4, selector: { matchLabels: { app: notification-service } }, template: { metadata: { labels: { app: notification-service } }, spec: { containers: [{ name: notification-service, image: chatapp/notification-service:latest, ports: [{ containerPort: 8080 }] }] } } }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: { name: presence-service, namespace: chatapp }
+spec: { replicas: 8, selector: { matchLabels: { app: presence-service } }, template: { metadata: { labels: { app: presence-service } }, spec: { containers: [{ name: presence-service, image: chatapp/presence-service:latest, ports: [{ containerPort: 8080 }] }] } } }
