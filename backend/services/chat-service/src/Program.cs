@@ -1,14 +1,18 @@
 using ChatService.Hubs;
 using Dapper;
+using Microsoft.AspNetCore.SignalR;
 using Npgsql;
 using StackExchange.Redis;
 using Shared;
+using System.Security.Cryptography;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSignalR().AddStackExchangeRedis(builder.Configuration["Redis:Connection"] ?? "redis:6379");
+builder.Services.AddSingleton<IUserIdProvider, QueryStringUserIdProvider>();
 builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(builder.Configuration["Redis:Connection"] ?? "redis:6379"));
 builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 builder.Services.AddSingleton<IEventPublisher, KafkaEventPublisher>();
@@ -56,6 +60,26 @@ app.MapPost("/api/chat/messages", async (CreateMessageRequest request, NpgsqlCon
     return Results.Accepted($"/api/chat/messages/{id}", new { id });
 });
 
+app.MapPost("/api/chat/conversations/direct", async (DirectConversationRequest request, NpgsqlConnection db) =>
+{
+    if (request.UserId == request.OtherUserId)
+    {
+        return Results.BadRequest(new { error = "Cannot create direct conversation with self" });
+    }
+
+    var (a, b) = request.UserId.CompareTo(request.OtherUserId) < 0
+        ? (request.UserId, request.OtherUserId)
+        : (request.OtherUserId, request.UserId);
+
+    var conversationId = DeterministicGuid.FromString($"{a:N}:{b:N}");
+
+    await db.ExecuteAsync(
+        "INSERT INTO conversations(id, type, created_by) VALUES(@id, 'direct', @createdBy) ON CONFLICT (id) DO NOTHING",
+        new { id = conversationId, createdBy = request.UserId });
+
+    return Results.Ok(new { conversationId });
+});
+
 app.MapHub<ChatHub>("/hubs/chat");
 app.MapHub<PresenceHub>("/hubs/presence");
 app.MapHub<CallHub>("/hubs/call");
@@ -64,3 +88,13 @@ app.MapHub<NotificationHub>("/hubs/notification");
 app.Run();
 
 public sealed record CreateMessageRequest(Guid ConversationId, Guid SenderId, string Content, string ContentType);
+public sealed record DirectConversationRequest(Guid UserId, Guid OtherUserId);
+
+static class DeterministicGuid
+{
+    public static Guid FromString(string input)
+    {
+        var bytes = MD5.HashData(Encoding.UTF8.GetBytes(input));
+        return new Guid(bytes);
+    }
+}

@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
 WORKDIR /src
-COPY ./src .
+COPY ./shared ./shared
+COPY ./services/chat-service/src ./services/chat-service/src
+WORKDIR /src/services/chat-service/src
 RUN dotnet restore && dotnet publish -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview

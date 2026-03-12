@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("chat-service")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a4c303eb1f2cac1b777ae6839b35bd8f1350be11")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1c849bf4972967a0b4f3c0a0b32d5f1c4acc7c5")]
 [assembly: System.Reflection.AssemblyProductAttribute("chat-service")]
 [assembly: System.Reflection.AssemblyTitleAttribute("chat-service")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

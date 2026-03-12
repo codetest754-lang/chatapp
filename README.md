@@ -68,7 +68,9 @@ docker compose up --build
 ```
 
 Frontend: `http://localhost:5173`
-Gateway: `http://localhost:8080`
+Gateway: `http://localhost:8088`
+
+Login: use Register in the UI to create a user, then sign in with email + password. All users join the shared demo conversation.
 
 ## Kubernetes
 Base manifests are in `infra/k8s/`.

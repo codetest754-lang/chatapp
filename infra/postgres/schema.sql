@@ -32,6 +32,8 @@ CREATE TABLE messages (
 CREATE TABLE messages_2026_01 PARTITION OF messages
 FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
 
+CREATE TABLE messages_default PARTITION OF messages DEFAULT;
+
 CREATE INDEX idx_messages_conversation_created_at ON messages (conversation_id, created_at DESC);
 CREATE INDEX idx_messages_fts ON messages USING GIN (to_tsvector('english', content));
 

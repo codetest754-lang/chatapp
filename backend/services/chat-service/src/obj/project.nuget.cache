@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "YK0wH1/jUtE=",
+  "dgSpecHash": "2YcHJ//a1NQ=",
   "success": true,
   "projectFilePath": "/home/tk/Documents/git/chatapp/backend/services/chat-service/src/chat-service.csproj",
   "expectedPackageFiles": [
@@ -9,8 +9,10 @@
     "/home/tk/.nuget/packages/librdkafka.redist/2.5.0/librdkafka.redist.2.5.0.nupkg.sha512",
     "/home/tk/.nuget/packages/messagepack/2.5.187/messagepack.2.5.187.nupkg.sha512",
     "/home/tk/.nuget/packages/messagepack.annotations/2.5.187/messagepack.annotations.2.5.187.nupkg.sha512",
+    "/home/tk/.nuget/packages/microsoft.aspnetcore.openapi/9.0.0/microsoft.aspnetcore.openapi.9.0.0.nupkg.sha512",
     "/home/tk/.nuget/packages/microsoft.aspnetcore.signalr.stackexchangeredis/9.0.0/microsoft.aspnetcore.signalr.stackexchangeredis.9.0.0.nupkg.sha512",
     "/home/tk/.nuget/packages/microsoft.net.stringtools/17.6.3/microsoft.net.stringtools.17.6.3.nupkg.sha512",
+    "/home/tk/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512",
     "/home/tk/.nuget/packages/npgsql/8.0.3/npgsql.8.0.3.nupkg.sha512",
     "/home/tk/.nuget/packages/pipelines.sockets.unofficial/2.2.8/pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
     "/home/tk/.nuget/packages/stackexchange.redis/2.8.24/stackexchange.redis.2.8.24.nupkg.sha512"

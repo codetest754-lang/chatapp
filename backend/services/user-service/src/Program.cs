@@ -12,6 +12,12 @@ builder.Services.AddScoped(_ => new NpgsqlConnection(builder.Configuration.GetCo
 
 var app = builder.Build();
 
+app.MapGet("/api/users", async (NpgsqlConnection db) =>
+{
+    var users = await db.QueryAsync("SELECT id, username, email, avatar_url FROM users ORDER BY created_at DESC LIMIT 200");
+    return Results.Ok(users);
+});
+
 app.MapGet("/api/users/{id:guid}", async (Guid id, NpgsqlConnection db, ICacheService cache) =>
 {
     var key = $"user:{id}";

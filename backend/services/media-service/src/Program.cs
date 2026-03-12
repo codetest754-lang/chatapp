@@ -1,5 +1,6 @@
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Util;
 using Dapper;
 using Npgsql;
 using StackExchange.Redis;
@@ -20,10 +21,21 @@ builder.Services.AddSingleton<IAmazonS3>(_ => new AmazonS3Client(builder.Configu
 
 var app = builder.Build();
 
+var s3Client = app.Services.GetRequiredService<IAmazonS3>();
+try
+{
+    await S3Bootstrap.EnsureBucketExists(s3Client, "chatapp");
+}
+catch
+{
+    // MinIO might not be ready yet; upload will retry on first request.
+}
+
 app.MapPost("/api/media/upload", async (HttpRequest request, IAmazonS3 s3, NpgsqlConnection db, IEventPublisher events) =>
 {
     var form = await request.ReadFormAsync();
     var file = form.Files[0];
+    await S3Bootstrap.EnsureBucketExists(s3, "chatapp");
     await using var stream = file.OpenReadStream();
     var objectKey = $"uploads/{Guid.NewGuid()}-{file.FileName}";
 
@@ -40,7 +52,20 @@ app.MapPost("/api/media/upload", async (HttpRequest request, IAmazonS3 s3, Npgsq
         new { id, objectKey, fileName = file.FileName, contentType = file.ContentType, size = file.Length });
 
     await events.PublishAsync("media.uploaded", new { id, objectKey, scanRequired = true, thumbnailRequired = file.ContentType.StartsWith("image/") });
-    return Results.Ok(new { id, objectKey });
+    var publicBase = builder.Configuration["S3:PublicUrl"] ?? "http://localhost:9000";
+    var url = $"{publicBase}/chatapp/{objectKey}";
+    return Results.Ok(new { id, objectKey, url });
 });
 
 app.Run();
+
+static class S3Bootstrap
+{
+    public static async Task EnsureBucketExists(IAmazonS3 s3, string bucketName)
+    {
+        if (!await AmazonS3Util.DoesS3BucketExistV2Async(s3, bucketName))
+        {
+            await s3.PutBucketAsync(bucketName);
+        }
+    }
+}

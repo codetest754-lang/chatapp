@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: chatapp
-    ports: ["5432:5432"]
+    ports: ["5433:5432"]
     volumes:
       - ./infra/postgres/schema.sql:/docker-entrypoint-initdb.d/schema.sql
 
@@ -36,25 +36,48 @@ services:
     ports: ["9000:9000", "9001:9001"]
 
   gateway-api:
-    build: ./backend/services/gateway-api
-    ports: ["8080:8080"]
+    build:
+      context: ./backend
+      dockerfile: services/gateway-api/Dockerfile
+    ports: ["8088:8080"]
 
   auth-service:
-    build: ./backend/services/auth-service
+    build:
+      context: ./backend
+      dockerfile: services/auth-service/Dockerfile
   user-service:
-    build: ./backend/services/user-service
+    build:
+      context: ./backend
+      dockerfile: services/user-service/Dockerfile
   chat-service:
-    build: ./backend/services/chat-service
+    build:
+      context: ./backend
+      dockerfile: services/chat-service/Dockerfile
   group-service:
-    build: ./backend/services/group-service
+    build:
+      context: ./backend
+      dockerfile: services/group-service/Dockerfile
   media-service:
-    build: ./backend/services/media-service
+    build:
+      context: ./backend
+      dockerfile: services/media-service/Dockerfile
+    environment:
+      S3__AccessKey: minio
+      S3__SecretKey: minio123
+      S3__Endpoint: http://minio:9000
+      S3__PublicUrl: http://localhost:9000
   call-service:
-    build: ./backend/services/call-service
+    build:
+      context: ./backend
+      dockerfile: services/call-service/Dockerfile
   notification-service:
-    build: ./backend/services/notification-service
+    build:
+      context: ./backend
+      dockerfile: services/notification-service/Dockerfile
   presence-service:
-    build: ./backend/services/presence-service
+    build:
+      context: ./backend
+      dockerfile: services/presence-service/Dockerfile
 
   frontend:
     image: node:20

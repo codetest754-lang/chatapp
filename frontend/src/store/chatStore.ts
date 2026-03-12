@@ -15,6 +15,7 @@ interface ChatState {
   typingUsers: string[];
   setDarkMode: (v: boolean) => void;
   addMessage: (m: Message) => void;
+  setMessages: (m: Message[]) => void;
   setTyping: (users: string[]) => void;
 }
 
@@ -24,5 +25,6 @@ export const useChatStore = create<ChatState>((set) => ({
   typingUsers: [],
   setDarkMode: (v) => set({ darkMode: v }),
   addMessage: (m) => set((s) => ({ messages: [m, ...s.messages] })),
+  setMessages: (m) => set({ messages: m }),
   setTyping: (users) => set({ typingUsers: users })
 }));
